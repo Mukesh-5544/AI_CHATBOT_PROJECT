@@ -1,0 +1,29 @@
+{
+  "intents": [
+    {
+      "tag": "greeting",
+      "patterns": ["Hi", "Hello", "Hey", "Good morning"],
+      "responses": ["Hello!", "Hi there!", "Hey!"]
+    },
+    {
+      "tag": "goodbye",
+      "patterns": ["Bye", "See you", "Goodbye"],
+      "responses": ["Goodbye!", "See you later!"]
+    },
+    {
+      "tag": "ai",
+      "patterns": ["What is AI", "Define artificial intelligence", "Explain AI"],
+      "responses": ["AI is the simulation of human intelligence by machines."]
+    },
+    {
+      "tag": "python",
+      "patterns": ["What is Python", "Tell me about Python"],
+      "responses": ["Python is a popular programming language for AI and ML."]
+    },
+    {
+      "tag": "ml",
+      "patterns": ["What is machine learning", "Explain machine learning"],
+      "responses": ["Machine learning is a subset of AI that learns from data."]
+    }
+  ]
+}
