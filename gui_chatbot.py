@@ -1,61 +1,53 @@
+import tkinter as tk
+import pickle
 import json
 import random
-import tkinter as tk
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.naive_bayes import MultinomialNB
+
+# Load model and vectorizer
+model = pickle.load(open("model.pkl", "rb"))
+vectorizer = pickle.load(open("vectorizer.pkl", "rb"))
 
 # Load intents
-with open(r"C:\Users\91970\Downloads\intents.json") as file:
+with open("intents.json") as file:
     data = json.load(file)
 
-patterns = []
-tags = []
-
-for intent in data["intents"]:
-    for pattern in intent["patterns"]:
-        patterns.append(pattern)
-        tags.append(intent["tag"])
-
-vectorizer = CountVectorizer()
-X = vectorizer.fit_transform(patterns)
-
-model = MultinomialNB()
-model.fit(X, tags)
-
-# Chatbot response function
-def get_response(user_input):
-    user_X = vectorizer.transform([user_input])
-    prediction = model.predict(user_X)[0]
+def chatbot_response(text):
+    X = vectorizer.transform([text])
+    tag = model.predict(X)[0]
 
     for intent in data["intents"]:
-        if intent["tag"] == prediction:
+        if intent["tag"] == tag:
             return random.choice(intent["responses"])
+
+    return "Sorry, I don't understand."
+
+# Send message
+def send():
+    user_input = entry.get()
+    chat_log.config(state=tk.NORMAL)
+    chat_log.insert(tk.END, "You: " + user_input + "\n")
+
+    response = chatbot_response(user_input)
+    chat_log.insert(tk.END, "Bot: " + response + "\n\n")
+
+    entry.delete(0, tk.END)
+    chat_log.config(state=tk.DISABLED)
+    chat_log.yview(tk.END)
 
 # GUI setup
 window = tk.Tk()
-window.title("AI Chatbot")
+window.title("AI Chatbot 🤖")
+window.geometry("500x600")
 
-chat_area = tk.Text(window, height=20, width=50)
-chat_area.pack()
+chat_log = tk.Text(window, bd=1, bg="white", font=("Arial", 12))
+chat_log.config(state=tk.DISABLED)
+chat_log.pack(padx=10, pady=10, fill=tk.BOTH, expand=True)
 
-entry_box = tk.Entry(window, width=40)
-entry_box.pack()
-
-def send():
-    user_input = entry_box.get()
-    chat_area.insert(tk.END, "You: " + user_input + "\n")
-
-    if user_input.lower() == "bye":
-        chat_area.insert(tk.END, "Bot: Goodbye!\n")
-        window.quit()
-    else:
-        response = get_response(user_input)
-        chat_area.insert(tk.END, "Bot: " + response + "\n")
-
-    entry_box.delete(0, tk.END)
+entry = tk.Entry(window, bd=1, font=("Arial", 12))
+entry.pack(padx=10, pady=10, fill=tk.X)
 
 send_button = tk.Button(window, text="Send", command=send)
-send_button.pack()
+send_button.pack(pady=5)
 
 window.mainloop()
 
